@@ -14,6 +14,9 @@ from lot51_core.tunables.business_tuning_injection import TunableBusinessTuningI
 from lot51_core.tunables.club_tuning_injection import TunableClubTuningInjection
 from lot51_core.tunables.custom_schedule_tuning_injection import TunableCustomScheduleTuningInjection
 from lot51_core.tunables.interaction_cancel_compatibility_injection import InteractionCancelCompatibilityInjection
+from lot51_core.tunables.interaction_picker_injection import (
+    TunablePickerInteractionInjection,
+)
 from lot51_core.tunables.part_injection import TunableObjectPartInjection
 from lot51_core.tunables.pregnancy_tracker_injector import TunablePregnancyTrackerInjection
 from lot51_core.tunables.relationship_bit_injection import TunableRelationshipBitInjection
@@ -175,6 +178,9 @@ class TuningInjector(metaclass=HashedTunedInstanceMetaclass, manager=services.ge
         ),
         "inject_to_route_events": TunableList(
             tunable=TunableRouteEventInjection.TunableFactory(),
+        ),
+        "inject_to_interaction_picker": TunableList(
+            tunable=TunablePickerInteractionInjection.TunableFactory(),
         ),
         "inject_to_service_picker": TunableList(
             description="Inject to non_service_npcs in the hire a service picker",
