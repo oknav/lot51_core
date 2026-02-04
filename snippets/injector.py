@@ -1,43 +1,41 @@
 import services
 import sims4
-from lot51_core import logger, __version__, __minimum_game_version__
-from lot51_core.lib.game_version import get_game_version, GameVersion
+from services import get_instance_manager
+from sims4.common import Pack
+from sims4.localization import LocalizationHelperTuning
+from sims4.resources import Types
+from sims4.tuning.instances import HashedTunedInstanceMetaclass
+from sims4.tuning.tunable import Tunable, TunableEnumSet, TunableList
+from ui.ui_dialog_notification import UiDialogNotification
+
+from lot51_core import __minimum_game_version__, __version__, logger
+from lot51_core.lib.game_version import GameVersion, get_game_version
 from lot51_core.pack_selection import is_pack_hot_load_triggered
-from lot51_core.services.events import event_handler, CoreEvent
+from lot51_core.services.events import CoreEvent, event_handler
 from lot51_core.tunables.affordance_injection import (
-    TunableAffordanceInjectionByAffordances,
-    TunableAffordanceInjectionByUtility,
     TunableAffordanceInjectionByAffordanceList,
+    TunableAffordanceInjectionByAffordances,
     TunableAffordanceInjectionByCategory,
-    TunableAffordanceInjectionToAllPhoneAffordances,
     TunableAffordanceInjectionByCategoryTags,
+    TunableAffordanceInjectionByUtility,
+    TunableAffordanceInjectionToAllPhoneAffordances,
 )
 from lot51_core.tunables.affordance_list_injection import TunableAffordanceListInjection
 from lot51_core.tunables.base_injection import BaseTunableInjection, InjectionTiming
+from lot51_core.tunables.buff_injection import TunableBuffInjection
 from lot51_core.tunables.business_tuning_injection import TunableBusinessTuningInjection
+from lot51_core.tunables.club_injection import TunableClubInteractionGroupInjection
 from lot51_core.tunables.club_tuning_injection import TunableClubTuningInjection
 from lot51_core.tunables.custom_schedule_tuning_injection import (
     TunableCustomScheduleTuningInjection,
 )
+from lot51_core.tunables.death_injection import TunableCustomDeath
 from lot51_core.tunables.interaction_cancel_compatibility_injection import (
     InteractionCancelCompatibilityInjection,
 )
 from lot51_core.tunables.interaction_picker_injection import (
     TunablePickerInteractionInjection,
 )
-from lot51_core.tunables.part_injection import TunableObjectPartInjection
-from lot51_core.tunables.pregnancy_tracker_injector import (
-    TunablePregnancyTrackerInjection,
-)
-from lot51_core.tunables.relationship_bit_injection import (
-    TunableRelationshipBitInjection,
-)
-from lot51_core.tunables.role_state_injection import TunableRoleStateInjection
-from lot51_core.tunables.sim_filter_injection import TunableSimFilterInjection
-from lot51_core.tunables.sim_info_injection import TunableSimInfoInjection
-from lot51_core.tunables.buff_injection import TunableBuffInjection
-from lot51_core.tunables.club_injection import TunableClubInteractionGroupInjection
-from lot51_core.tunables.death_injection import TunableCustomDeath
 from lot51_core.tunables.loot_injection import (
     TunableLootInjection,
     TunableRandomWeightedLootInjection,
@@ -45,28 +43,38 @@ from lot51_core.tunables.loot_injection import (
 from lot51_core.tunables.mixer_list_injection import TunableMixerListInjection
 from lot51_core.tunables.object_injection import (
     TunableObjectInjectionByAffordance,
-    TunableObjectInjectionByTuningId,
     TunableObjectInjectionByDefinitions,
-    TunableObjectInjectionByTags,
     TunableObjectInjectionByManyTuningId,
+    TunableObjectInjectionByTags,
+    TunableObjectInjectionByTuningId,
 )
 from lot51_core.tunables.object_state_injection import (
     TunableObjectStateInjection,
     TunableObjectStateValueInjection,
 )
+from lot51_core.tunables.part_injection import TunableObjectPartInjection
 from lot51_core.tunables.posture_injection import TunablePostureInjection
 from lot51_core.tunables.preference_item_injection import (
     TunableCharacteristicPreferenceItemInjection,
 )
+from lot51_core.tunables.pregnancy_tracker_injector import (
+    TunablePregnancyTrackerInjection,
+)
 from lot51_core.tunables.region_injection import TunableRegionInjection
+from lot51_core.tunables.relationship_bit_injection import (
+    TunableRelationshipBitInjection,
+)
+from lot51_core.tunables.role_state_injection import TunableRoleStateInjection
 from lot51_core.tunables.route_event_injection import TunableRouteEventInjection
 from lot51_core.tunables.satisfaction_store_injection import (
     TunableSatisfactionStoreInjection,
 )
 from lot51_core.tunables.service_picker_injection import (
-    TunableServicePickerInjection,
     TunableHireableServicePickerInjection,
+    TunableServicePickerInjection,
 )
+from lot51_core.tunables.sim_filter_injection import TunableSimFilterInjection
+from lot51_core.tunables.sim_info_injection import TunableSimInfoInjection
 from lot51_core.tunables.situation_injection import TunableSituationInjection
 from lot51_core.tunables.situation_job_injection import TunableSituationJobInjection
 from lot51_core.tunables.skill_injection import TunableSkillInjection
@@ -82,14 +90,6 @@ from lot51_core.tunables.university_tuning_injection import (
 from lot51_core.tunables.whim_set_injection import TunableWhimSetInjection
 from lot51_core.utils.injection_tracker import injection_tracker
 from lot51_core.utils.semver import Version
-from services import get_instance_manager
-from sims4.common import Pack
-from sims4.localization import LocalizationHelperTuning
-from sims4.tuning.instances import HashedTunedInstanceMetaclass
-from sims4.tuning.tunable import TunableList, Tunable, TunableEnumSet
-from sims4.resources import Types
-from ui.ui_dialog_notification import UiDialogNotification
-
 
 with sims4.reload.protected(globals()):
     SHOWN_VERSION_NOTIFICATION = False
