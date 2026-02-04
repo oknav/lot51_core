@@ -336,7 +336,7 @@ class TuningInjector(
     def _get_injectors_gen(cls):
         for key in cls.__injectors__:
             injector = getattr(cls, key)
-            if type(injector) == tuple:
+            if isinstance(injector, tuple):
                 for subinjector in injector:
                     if (
                         isinstance(subinjector, BaseTunableInjection)
@@ -375,8 +375,10 @@ class TuningInjector(
                 if injector.injection_timing == timing:
                     injector.inject()
                     total += 1
-            except:
-                logger.exception("[TuningInjector] injector failed: {}".format(key))
+            except Exception:
+                logger.exception(
+                    "[TuningInjector] injector failed: {}".format(key), exc_info=True
+                )
 
         logger.info("[TuningInjector] completed injections; total {}".format(total))
 
@@ -436,11 +438,12 @@ def _do_injections(*args, **kwargs):
                         snippet.__name__, snippet.minimum_core_version, __version__
                     )
                 )
-        except:
+        except Exception:
             logger.exception(
                 "TUNING_LOADED Injection Failure for Snippet: {}".format(
                     snippet.to_str()
-                )
+                ),
+                exc_info=True,
             )
 
     # Perform post load injections that are dependent
@@ -449,11 +452,12 @@ def _do_injections(*args, **kwargs):
         try:
             if snippet.is_valid_version():
                 snippet.perform_injections(InjectionTiming.POST_TUNING_LOADED)
-        except:
+        except Exception:
             logger.exception(
                 "POST_TUNING_LOADED Injection Failure for Snippet: {}".format(
                     snippet.to_str()
-                )
+                ),
+                exc_info=True,
             )
 
     injection_tracker.cleanup()
@@ -465,9 +469,10 @@ def _do_zone_dependent_injections(*args, **kwargs):
         try:
             if snippet.is_valid_version():
                 snippet.perform_injections(InjectionTiming.ZONE_LOAD)
-        except:
+        except Exception:
             logger.exception(
-                "ZONE_LOAD Injection Failure for Snippet: {}".format(snippet.to_str())
+                "ZONE_LOAD Injection Failure for Snippet: {}".format(snippet.to_str()),
+                exc_info=True,
             )
 
 
