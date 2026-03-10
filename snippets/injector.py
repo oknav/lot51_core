@@ -21,6 +21,7 @@ from lot51_core.tunables.affordance_injection import (
     TunableAffordanceInjectionToAllPhoneAffordances,
 )
 from lot51_core.tunables.affordance_list_injection import TunableAffordanceListInjection
+from lot51_core.tunables.balloon_injection import TunableBalloonInjection
 from lot51_core.tunables.base_injection import BaseTunableInjection, InjectionTiming
 from lot51_core.tunables.buff_injection import TunableBuffInjection
 from lot51_core.tunables.business_tuning_injection import TunableBusinessTuningInjection
@@ -195,6 +196,9 @@ class TuningInjector(
             tunable=TunableHolidayTraditionInjection.TunableFactory(),
         ),
         "inject_to_loot": TunableList(tunable=TunableLootInjection.TunableFactory()),
+        "inject_to_balloon": TunableList(
+            tunable=TunableBalloonInjection.TunableFactory()
+        ),
         "inject_to_object_parts": TunableList(
             tunable=TunableObjectPartInjection.TunableFactory(),
         ),
