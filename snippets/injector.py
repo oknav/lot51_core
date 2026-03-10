@@ -24,6 +24,18 @@ from lot51_core.tunables.affordance_list_injection import TunableAffordanceListI
 from lot51_core.tunables.base_injection import BaseTunableInjection, InjectionTiming
 from lot51_core.tunables.buff_injection import TunableBuffInjection
 from lot51_core.tunables.business_tuning_injection import TunableBusinessTuningInjection
+from lot51_core.tunables.club_tuning_injection import TunableClubTuningInjection
+from lot51_core.tunables.custom_schedule_tuning_injection import TunableCustomScheduleTuningInjection
+from lot51_core.tunables.dynasty_value_injection import TunableDynastyValueInjection
+from lot51_core.tunables.interaction_cancel_compatibility_injection import InteractionCancelCompatibilityInjection
+from lot51_core.tunables.part_injection import TunableObjectPartInjection
+from lot51_core.tunables.posture_list_injection import TunablePostureListInjection
+from lot51_core.tunables.pregnancy_tracker_injector import TunablePregnancyTrackerInjection
+from lot51_core.tunables.relationship_bit_injection import TunableRelationshipBitInjection
+from lot51_core.tunables.role_state_injection import TunableRoleStateInjection
+from lot51_core.tunables.sim_filter_injection import TunableSimFilterInjection
+from lot51_core.tunables.sim_info_injection import TunableSimInfoInjection
+from lot51_core.tunables.buff_injection import TunableBuffInjection
 from lot51_core.tunables.club_injection import TunableClubInteractionGroupInjection
 from lot51_core.tunables.club_tuning_injection import TunableClubTuningInjection
 from lot51_core.tunables.custom_schedule_tuning_injection import (
@@ -88,6 +100,7 @@ from lot51_core.tunables.university_tuning_injection import (
     TunableUniversityTuningInjection,
 )
 from lot51_core.tunables.whim_set_injection import TunableWhimSetInjection
+from lot51_core.tunables.zone_modifier_injection import TunableZoneModifierInjection
 from lot51_core.utils.injection_tracker import injection_tracker
 from lot51_core.utils.semver import Version
 
@@ -104,6 +117,7 @@ class TuningInjector(
     INVALID_SNIPPETS = set()
 
     INSTANCE_TUNABLES = {
+        "_enable_debug": Tunable(tunable_type=bool, default=False),
         "_required_packs": TunableEnumSet(
             enum_type=Pack, default_enum_list=(Pack.BASE_GAME,)
         ),
@@ -184,6 +198,9 @@ class TuningInjector(
             description="A mapping of the desired traits associated with this PreferenceItem, and the corresponding scores.",
             tunable=TunableCharacteristicPreferenceItemInjection.TunableFactory(),
         ),
+        "inject_to_dynasty_values": TunableList(
+            tunable=TunableDynastyValueInjection.TunableFactory(),
+        ),
         "inject_to_holiday_traditions": TunableList(
             tunable=TunableHolidayTraditionInjection.TunableFactory(),
         ),
@@ -199,6 +216,9 @@ class TuningInjector(
         ),
         "inject_to_postures": TunableList(
             tunable=TunablePostureInjection.TunableFactory()
+        ),
+        "inject_to_posture_type_lists": TunableList(
+            tunable=TunablePostureListInjection.TunableFactory()
         ),
         "inject_to_random_weighted_loot": TunableList(
             tunable=TunableRandomWeightedLootInjection.TunableFactory()
@@ -259,6 +279,9 @@ class TuningInjector(
         ),
         "inject_to_whim_sets": TunableList(
             tunable=TunableWhimSetInjection.TunableFactory(),
+        ),
+        "inject_to_zone_modifiers": TunableList(
+            tunable=TunableZoneModifierInjection.TunableFactory(),
         ),
         "custom_death_types": TunableList(
             tunable=TunableCustomDeath.TunableFactory(),
