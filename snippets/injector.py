@@ -1,42 +1,82 @@
 import services
 import sims4
-from lot51_core import logger, __version__, __minimum_game_version__
-from lot51_core.lib.game_version import get_game_version, GameVersion
+from services import get_instance_manager
+from sims4.common import Pack
+from sims4.localization import LocalizationHelperTuning
+from sims4.resources import Types
+from sims4.tuning.instances import HashedTunedInstanceMetaclass
+from sims4.tuning.tunable import Tunable, TunableEnumSet, TunableList
+from ui.ui_dialog_notification import UiDialogNotification
+
+from lot51_core import __minimum_game_version__, __version__, logger
+from lot51_core.lib.game_version import GameVersion, get_game_version
 from lot51_core.pack_selection import is_pack_hot_load_triggered
-from lot51_core.services.events import event_handler, CoreEvent
-from lot51_core.tunables.affordance_injection import TunableAffordanceInjectionByAffordances, \
-    TunableAffordanceInjectionByUtility, TunableAffordanceInjectionByAffordanceList, \
-    TunableAffordanceInjectionByCategory, TunableAffordanceInjectionToAllPhoneAffordances, \
-    TunableAffordanceInjectionByCategoryTags
+from lot51_core.services.events import CoreEvent, event_handler
+from lot51_core.tunables.affordance_injection import (
+    TunableAffordanceInjectionByAffordanceList,
+    TunableAffordanceInjectionByAffordances,
+    TunableAffordanceInjectionByCategory,
+    TunableAffordanceInjectionByCategoryTags,
+    TunableAffordanceInjectionByUtility,
+    TunableAffordanceInjectionToAllPhoneAffordances,
+)
 from lot51_core.tunables.affordance_list_injection import TunableAffordanceListInjection
 from lot51_core.tunables.base_injection import BaseTunableInjection, InjectionTiming
+from lot51_core.tunables.buff_injection import TunableBuffInjection
 from lot51_core.tunables.business_tuning_injection import TunableBusinessTuningInjection
+from lot51_core.tunables.club_injection import TunableClubInteractionGroupInjection
 from lot51_core.tunables.club_tuning_injection import TunableClubTuningInjection
-from lot51_core.tunables.custom_schedule_tuning_injection import TunableCustomScheduleTuningInjection
+from lot51_core.tunables.custom_schedule_tuning_injection import (
+    TunableCustomScheduleTuningInjection,
+)
+from lot51_core.tunables.death_injection import TunableCustomDeath
 from lot51_core.tunables.dynasty_value_injection import TunableDynastyValueInjection
-from lot51_core.tunables.interaction_cancel_compatibility_injection import InteractionCancelCompatibilityInjection
+from lot51_core.tunables.interaction_cancel_compatibility_injection import (
+    InteractionCancelCompatibilityInjection,
+)
+from lot51_core.tunables.interaction_picker_injection import (
+    TunablePickerInteractionInjection,
+)
+from lot51_core.tunables.loot_injection import (
+    TunableLootInjection,
+    TunableRandomWeightedLootInjection,
+)
+from lot51_core.tunables.mixer_list_injection import TunableMixerListInjection
+from lot51_core.tunables.object_injection import (
+    TunableObjectInjectionByAffordance,
+    TunableObjectInjectionByDefinitions,
+    TunableObjectInjectionByManyTuningId,
+    TunableObjectInjectionByTags,
+    TunableObjectInjectionByTuningId,
+)
+from lot51_core.tunables.object_state_injection import (
+    TunableObjectStateInjection,
+    TunableObjectStateValueInjection,
+)
 from lot51_core.tunables.part_injection import TunableObjectPartInjection
+from lot51_core.tunables.posture_injection import TunablePostureInjection
 from lot51_core.tunables.posture_list_injection import TunablePostureListInjection
-from lot51_core.tunables.pregnancy_tracker_injector import TunablePregnancyTrackerInjection
-from lot51_core.tunables.relationship_bit_injection import TunableRelationshipBitInjection
+from lot51_core.tunables.preference_item_injection import (
+    TunableCharacteristicPreferenceItemInjection,
+)
+from lot51_core.tunables.pregnancy_tracker_injector import (
+    TunablePregnancyTrackerInjection,
+)
+from lot51_core.tunables.region_injection import TunableRegionInjection
+from lot51_core.tunables.relationship_bit_injection import (
+    TunableRelationshipBitInjection,
+)
 from lot51_core.tunables.role_state_injection import TunableRoleStateInjection
+from lot51_core.tunables.route_event_injection import TunableRouteEventInjection
+from lot51_core.tunables.satisfaction_store_injection import (
+    TunableSatisfactionStoreInjection,
+)
+from lot51_core.tunables.service_picker_injection import (
+    TunableHireableServicePickerInjection,
+    TunableServicePickerInjection,
+)
 from lot51_core.tunables.sim_filter_injection import TunableSimFilterInjection
 from lot51_core.tunables.sim_info_injection import TunableSimInfoInjection
-from lot51_core.tunables.buff_injection import TunableBuffInjection
-from lot51_core.tunables.club_injection import TunableClubInteractionGroupInjection
-from lot51_core.tunables.death_injection import TunableCustomDeath
-from lot51_core.tunables.loot_injection import TunableLootInjection, TunableRandomWeightedLootInjection
-from lot51_core.tunables.mixer_list_injection import TunableMixerListInjection
-from lot51_core.tunables.object_injection import TunableObjectInjectionByAffordance, TunableObjectInjectionByTuningId, \
-    TunableObjectInjectionByDefinitions, TunableObjectInjectionByTags, \
-    TunableObjectInjectionByManyTuningId
-from lot51_core.tunables.object_state_injection import TunableObjectStateInjection, TunableObjectStateValueInjection
-from lot51_core.tunables.posture_injection import TunablePostureInjection
-from lot51_core.tunables.preference_item_injection import TunableCharacteristicPreferenceItemInjection
-from lot51_core.tunables.region_injection import TunableRegionInjection
-from lot51_core.tunables.route_event_injection import TunableRouteEventInjection
-from lot51_core.tunables.satisfaction_store_injection import TunableSatisfactionStoreInjection
-from lot51_core.tunables.service_picker_injection import TunableServicePickerInjection, TunableHireableServicePickerInjection
 from lot51_core.tunables.situation_injection import TunableSituationInjection
 from lot51_core.tunables.situation_job_injection import TunableSituationJobInjection
 from lot51_core.tunables.skill_injection import TunableSkillInjection
@@ -46,43 +86,44 @@ from lot51_core.tunables.tradition_injection import TunableHolidayTraditionInjec
 from lot51_core.tunables.trait_injection import TunableTraitInjection
 from lot51_core.tunables.trait_tracker_injector import TunableTraitTrackerInjection
 from lot51_core.tunables.university_injection import TunableUniversityInjection
-from lot51_core.tunables.university_tuning_injection import TunableUniversityTuningInjection
+from lot51_core.tunables.university_tuning_injection import (
+    TunableUniversityTuningInjection,
+)
 from lot51_core.tunables.whim_set_injection import TunableWhimSetInjection
 from lot51_core.tunables.zone_modifier_injection import TunableZoneModifierInjection
 from lot51_core.utils.injection_tracker import injection_tracker
 from lot51_core.utils.semver import Version
-from services import get_instance_manager
-from sims4.common import Pack
-from sims4.localization import LocalizationHelperTuning
-from sims4.tuning.instances import HashedTunedInstanceMetaclass
-from sims4.tuning.tunable import TunableList, Tunable, TunableEnumSet
-from sims4.resources import Types
-from ui.ui_dialog_notification import UiDialogNotification
-
 
 with sims4.reload.protected(globals()):
     SHOWN_VERSION_NOTIFICATION = False
     SHOWN_PACK_HOT_LOAD_NOTIFICATION = False
 
 
-class TuningInjector(metaclass=HashedTunedInstanceMetaclass, manager=services.get_instance_manager(Types.SNIPPET)):
+class TuningInjector(
+    metaclass=HashedTunedInstanceMetaclass,
+    manager=services.get_instance_manager(Types.SNIPPET),
+):
     VERSION_DIALOG = UiDialogNotification.TunableFactory()
     INVALID_SNIPPETS = set()
 
     INSTANCE_TUNABLES = {
         "_enable_debug": Tunable(tunable_type=bool, default=False),
-        "_required_packs": TunableEnumSet(enum_type=Pack, default_enum_list=(Pack.BASE_GAME,)),
+        "_required_packs": TunableEnumSet(
+            enum_type=Pack, default_enum_list=(Pack.BASE_GAME,)
+        ),
         "minimum_core_version": Tunable(tunable_type=str, default=__version__),
-        "minimum_game_version": Tunable(tunable_type=str, default=__minimum_game_version__),
-        "creator_name": Tunable(tunable_type=str, default='N/A'),
-        "mod_name": Tunable(tunable_type=str, default='N/A'),
+        "minimum_game_version": Tunable(
+            tunable_type=str, default=__minimum_game_version__
+        ),
+        "creator_name": Tunable(tunable_type=str, default="N/A"),
+        "mod_name": Tunable(tunable_type=str, default="N/A"),
         "inject_by_affordance": TunableList(
             description="Inject to object tuning based on an existing affordance",
             tunable=TunableObjectInjectionByAffordance.TunableFactory(),
         ),
         "inject_by_definitions": TunableList(
             description="Inject to affordances",
-            tunable=TunableObjectInjectionByDefinitions.TunableFactory()
+            tunable=TunableObjectInjectionByDefinitions.TunableFactory(),
         ),
         "inject_by_object_tuning": TunableList(
             description="Inject to object tuning",
@@ -102,7 +143,7 @@ class TuningInjector(metaclass=HashedTunedInstanceMetaclass, manager=services.ge
         # ),
         "inject_to_affordances": TunableList(
             description="Inject to affordances",
-            tunable=TunableAffordanceInjectionByAffordances.TunableFactory()
+            tunable=TunableAffordanceInjectionByAffordances.TunableFactory(),
         ),
         "inject_to_affordances_by_list": TunableList(
             description="Inject to affordances in an affordance list snippet",
@@ -110,19 +151,19 @@ class TuningInjector(metaclass=HashedTunedInstanceMetaclass, manager=services.ge
         ),
         "inject_to_affordances_by_utility_info": TunableList(
             description="Inject to affordances by their required utility",
-            tunable=TunableAffordanceInjectionByUtility.TunableFactory()
+            tunable=TunableAffordanceInjectionByUtility.TunableFactory(),
         ),
         "inject_to_affordances_by_category": TunableList(
             description="Inject to affordances by their category, accepts multiple categories",
-            tunable=TunableAffordanceInjectionByCategory.TunableFactory()
+            tunable=TunableAffordanceInjectionByCategory.TunableFactory(),
         ),
         "inject_to_affordances_by_category_tags": TunableList(
             description="Inject to affordances by interaction_category_tags if there is at least one match",
-            tunable=TunableAffordanceInjectionByCategoryTags.TunableFactory()
+            tunable=TunableAffordanceInjectionByCategoryTags.TunableFactory(),
         ),
         "inject_to_all_phone_affordances": TunableList(
             description="Inject to all phone affordances",
-            tunable=TunableAffordanceInjectionToAllPhoneAffordances.TunableFactory()
+            tunable=TunableAffordanceInjectionToAllPhoneAffordances.TunableFactory(),
         ),
         "inject_by_utility_info": TunableList(
             description="Inject to affordances by their required utility",
@@ -134,18 +175,18 @@ class TuningInjector(metaclass=HashedTunedInstanceMetaclass, manager=services.ge
         ),
         "inject_to_affordance_list": TunableList(
             description="Inject super interactions to affordance list snippet",
-            tunable=TunableAffordanceListInjection.TunableFactory()
+            tunable=TunableAffordanceListInjection.TunableFactory(),
         ),
         "inject_to_mixer_list": TunableList(
             description="Inject mixers to affordance list snippet",
-            tunable=TunableMixerListInjection.TunableFactory()
+            tunable=TunableMixerListInjection.TunableFactory(),
         ),
         "inject_to_buffs": TunableList(
             tunable=TunableBuffInjection.TunableFactory(),
         ),
         "inject_to_characteristic_preferences": TunableList(
             description="A mapping of the desired traits associated with this PreferenceItem, and the corresponding scores.",
-            tunable=TunableCharacteristicPreferenceItemInjection.TunableFactory()
+            tunable=TunableCharacteristicPreferenceItemInjection.TunableFactory(),
         ),
         "inject_to_dynasty_values": TunableList(
             tunable=TunableDynastyValueInjection.TunableFactory(),
@@ -153,9 +194,7 @@ class TuningInjector(metaclass=HashedTunedInstanceMetaclass, manager=services.ge
         "inject_to_holiday_traditions": TunableList(
             tunable=TunableHolidayTraditionInjection.TunableFactory(),
         ),
-        "inject_to_loot": TunableList(
-            tunable=TunableLootInjection.TunableFactory()
-        ),
+        "inject_to_loot": TunableList(tunable=TunableLootInjection.TunableFactory()),
         "inject_to_object_parts": TunableList(
             tunable=TunableObjectPartInjection.TunableFactory(),
         ),
@@ -186,17 +225,26 @@ class TuningInjector(metaclass=HashedTunedInstanceMetaclass, manager=services.ge
         "inject_to_route_events": TunableList(
             tunable=TunableRouteEventInjection.TunableFactory(),
         ),
+        "inject_to_interaction_picker": TunableList(
+            tunable=TunablePickerInteractionInjection.TunableFactory(),
+        ),
         "inject_to_service_picker": TunableList(
             description="Inject to non_service_npcs in the hire a service picker",
-            tunable=TunableServicePickerInjection.TunableFactory(locked_args={'picker_tuning':9838}),
+            tunable=TunableServicePickerInjection.TunableFactory(
+                locked_args={"picker_tuning": 9838}
+            ),
         ),
         "inject_to_service_picker_hireable": TunableList(
             description="Inject to service_npcs in the hire a service picker",
-            tunable=TunableHireableServicePickerInjection.TunableFactory(locked_args={'picker_tuning':9838}),
+            tunable=TunableHireableServicePickerInjection.TunableFactory(
+                locked_args={"picker_tuning": 9838}
+            ),
         ),
         "inject_to_service_picker_deliveries": TunableList(
             description="Inject to service_npcs in the order a delivery picker",
-            tunable=TunableHireableServicePickerInjection.TunableFactory(locked_args={'picker_tuning':261896}),
+            tunable=TunableHireableServicePickerInjection.TunableFactory(
+                locked_args={"picker_tuning": 261896}
+            ),
         ),
         "inject_to_sim_filters": TunableList(
             tunable=TunableSimFilterInjection.TunableFactory(),
@@ -246,21 +294,29 @@ class TuningInjector(metaclass=HashedTunedInstanceMetaclass, manager=services.ge
 
     @classmethod
     def get_author(cls):
-        return '{} by {} ({})'.format(cls.mod_name, cls.creator_name, cls.__name__)
+        return "{} by {} ({})".format(cls.mod_name, cls.creator_name, cls.__name__)
 
     @classmethod
     def to_str(cls):
-        return '<TuningInjector {}; minimum core version {};>'.format(cls.get_author(), cls.minimum_core_version)
+        return "<TuningInjector {}; minimum core version {};>".format(
+            cls.get_author(), cls.minimum_core_version
+        )
 
     @classmethod
     def _tuning_loaded_callback(cls):
-        logger.info('[tuning_loaded_callback] {}'.format(cls.to_str()))
+        logger.info("[tuning_loaded_callback] {}".format(cls.to_str()))
         if not GameVersion.test(cls.minimum_game_version):
-            logger.warn("Invalid minimum_game_version defined: {} Please use a fully qualified version with three segments.".format(cls.minimum_game_version))
+            logger.warn(
+                "Invalid minimum_game_version defined: {} Please use a fully qualified version with three segments.".format(
+                    cls.minimum_game_version
+                )
+            )
 
     @classmethod
     def all_snippets_gen(cls):
-        yield from get_instance_manager(Types.SNIPPET).get_ordered_types(only_subclasses_of=cls)
+        yield from get_instance_manager(Types.SNIPPET).get_ordered_types(
+            only_subclasses_of=cls
+        )
 
     @classmethod
     def get_core_version(cls):
@@ -293,9 +349,12 @@ class TuningInjector(metaclass=HashedTunedInstanceMetaclass, manager=services.ge
     def _get_injectors_gen(cls):
         for key in cls.__injectors__:
             injector = getattr(cls, key)
-            if type(injector) == tuple:
+            if isinstance(injector, tuple):
                 for subinjector in injector:
-                    if isinstance(subinjector, BaseTunableInjection) and subinjector.is_available():
+                    if (
+                        isinstance(subinjector, BaseTunableInjection)
+                        and subinjector.is_available()
+                    ):
                         yield key, subinjector
             elif isinstance(injector, BaseTunableInjection) and injector.is_available():
                 yield key, injector
@@ -303,13 +362,25 @@ class TuningInjector(metaclass=HashedTunedInstanceMetaclass, manager=services.ge
     @classmethod
     def perform_injections(cls, timing: InjectionTiming):
         if not cls.are_packs_available():
-            logger.warn("[TuningInjector] skipping injector {} due to missing packs".format(cls.get_author()))
+            logger.warn(
+                "[TuningInjector] skipping injector {} due to missing packs".format(
+                    cls.get_author()
+                )
+            )
             return
         if not cls.is_valid_game_version():
-            logger.warn("[TuningInjector] skipping injector {} due to incompatibility with the current game version. Minimum version required: {}".format(cls.get_author(), cls.minimum_core_version))
+            logger.warn(
+                "[TuningInjector] skipping injector {} due to incompatibility with the current game version. Minimum version required: {}".format(
+                    cls.get_author(), cls.minimum_core_version
+                )
+            )
             return
 
-        logger.info('[TuningInjector] starting injections for timing {}: {}'.format(timing, cls.get_author()))
+        logger.info(
+            "[TuningInjector] starting injections for timing {}: {}".format(
+                timing, cls.get_author()
+            )
+        )
 
         total = 0
         for key, injector in cls._get_injectors_gen():
@@ -317,19 +388,27 @@ class TuningInjector(metaclass=HashedTunedInstanceMetaclass, manager=services.ge
                 if injector.injection_timing == timing:
                     injector.inject()
                     total += 1
-            except:
-                logger.exception('[TuningInjector] injector failed: {}'.format(key))
+            except Exception:
+                logger.exception(
+                    "[TuningInjector] injector failed: {}".format(key), exc_info=True
+                )
 
-        logger.info('[TuningInjector] completed injections; total {}'.format(total))
+        logger.info("[TuningInjector] completed injections; total {}".format(total))
 
     @classmethod
     def show_version_dialog(cls):
         active_sim = services.get_active_sim()
         dialog = cls.VERSION_DIALOG(active_sim)
-        dialog.title = lambda *_: LocalizationHelperTuning.get_raw_text("Lot 51 Core Library Issue Detected")
-        text = "{} by {} requires a newer version of Core Library.\n\n" \
-               "Current Version: {}\nRequired Version: {}\n\nPlease download the latest version from https://lot51.cc/core to use this mod. Otherwise double check that an older version is not still in your Mods folder.\n\n" \
-               "If you still experience issues, join the Lot 51 Discord.".format(cls.mod_name, cls.creator_name, __version__, cls.minimum_core_version)
+        dialog.title = lambda *_: LocalizationHelperTuning.get_raw_text(
+            "Lot 51 Core Library Issue Detected"
+        )
+        text = (
+            "{} by {} requires a newer version of Core Library.\n\n"
+            "Current Version: {}\nRequired Version: {}\n\nPlease download the latest version from https://lot51.cc/core to use this mod. Otherwise double check that an older version is not still in your Mods folder.\n\n"
+            "If you still experience issues, join the Lot 51 Discord.".format(
+                cls.mod_name, cls.creator_name, __version__, cls.minimum_core_version
+            )
+        )
         dialog.text = lambda *_: LocalizationHelperTuning.get_raw_text(text)
         dialog.urgency = UiDialogNotification.UiDialogNotificationUrgency.URGENT
         dialog.show_dialog()
@@ -338,7 +417,9 @@ class TuningInjector(metaclass=HashedTunedInstanceMetaclass, manager=services.ge
     def show_pack_hot_load_dialog():
         active_sim = services.get_active_sim()
         dialog = TuningInjector.VERSION_DIALOG(active_sim)
-        dialog.title = lambda *_: LocalizationHelperTuning.get_raw_text("Lot 51 Core Library Disabled")
+        dialog.title = lambda *_: LocalizationHelperTuning.get_raw_text(
+            "Lot 51 Core Library Disabled"
+        )
         text = "A Pack Selection change without a game restart has been detected. Core Library has disabled itself to prevent unexpected errors.\n\n<i>Please restart your game to ensure it is in a safe state for Core Library to run.</i>"
         dialog.text = lambda *_: LocalizationHelperTuning.get_raw_text(text)
         dialog.urgency = UiDialogNotification.UiDialogNotificationUrgency.URGENT
@@ -348,7 +429,9 @@ class TuningInjector(metaclass=HashedTunedInstanceMetaclass, manager=services.ge
 @event_handler(CoreEvent.TUNING_LOADED, weight=-10)
 def _do_injections(*args, **kwargs):
     if is_pack_hot_load_triggered():
-        logger.warn("[TuningInjector] Pack Hot Load Detected! Core Library has been disabled.")
+        logger.warn(
+            "[TuningInjector] Pack Hot Load Detected! Core Library has been disabled."
+        )
         return
     # This allows definitions to be queried by tag
     # Thank you Scumbumbo
@@ -363,9 +446,18 @@ def _do_injections(*args, **kwargs):
                 snippet.perform_injections(InjectionTiming.TUNING_LOADED)
             else:
                 TuningInjector.INVALID_SNIPPETS.add(snippet)
-                logger.warn("Snippet {} version is incompatible with the current Core Library version. {} < {}".format(snippet.__name__, snippet.minimum_core_version, __version__))
-        except:
-            logger.exception("TUNING_LOADED Injection Failure for Snippet: {}".format(snippet.to_str()))
+                logger.warn(
+                    "Snippet {} version is incompatible with the current Core Library version. {} < {}".format(
+                        snippet.__name__, snippet.minimum_core_version, __version__
+                    )
+                )
+        except Exception:
+            logger.exception(
+                "TUNING_LOADED Injection Failure for Snippet: {}".format(
+                    snippet.to_str()
+                ),
+                exc_info=True,
+            )
 
     # Perform post load injections that are dependent
     # upon the initial injections.
@@ -373,8 +465,13 @@ def _do_injections(*args, **kwargs):
         try:
             if snippet.is_valid_version():
                 snippet.perform_injections(InjectionTiming.POST_TUNING_LOADED)
-        except:
-            logger.exception("POST_TUNING_LOADED Injection Failure for Snippet: {}".format(snippet.to_str()))
+        except Exception:
+            logger.exception(
+                "POST_TUNING_LOADED Injection Failure for Snippet: {}".format(
+                    snippet.to_str()
+                ),
+                exc_info=True,
+            )
 
     injection_tracker.cleanup()
 
@@ -385,8 +482,11 @@ def _do_zone_dependent_injections(*args, **kwargs):
         try:
             if snippet.is_valid_version():
                 snippet.perform_injections(InjectionTiming.ZONE_LOAD)
-        except:
-            logger.exception("ZONE_LOAD Injection Failure for Snippet: {}".format(snippet.to_str()))
+        except Exception:
+            logger.exception(
+                "ZONE_LOAD Injection Failure for Snippet: {}".format(snippet.to_str()),
+                exc_info=True,
+            )
 
 
 @event_handler(CoreEvent.LOADING_SCREEN_LIFTED)
