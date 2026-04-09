@@ -80,6 +80,7 @@ from lot51_core.tunables.sim_filter_injection import TunableSimFilterInjection
 from lot51_core.tunables.sim_info_injection import TunableSimInfoInjection
 from lot51_core.tunables.situation_injection import TunableSituationInjection
 from lot51_core.tunables.situation_job_injection import TunableSituationJobInjection
+from lot51_core.tunables.situtation_goal_injection import TunableSituationGoalInjection
 from lot51_core.tunables.skill_injection import TunableSkillInjection
 from lot51_core.tunables.social_bunny_injection import TunableSocialBunnyInjection
 from lot51_core.tunables.test_set_injection import TunableTestSetInjection
@@ -255,6 +256,9 @@ class TuningInjector(
         ),
         "inject_to_situations": TunableList(
             tunable=TunableSituationInjection.TunableFactory(),
+        ),
+        "inject_to_situation_goals": TunableList(
+            tunable=TunableSituationGoalInjection.TunableFactory(),
         ),
         "inject_to_situation_jobs": TunableList(
             tunable=TunableSituationJobInjection.TunableFactory(),
